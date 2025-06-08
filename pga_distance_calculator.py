@@ -108,7 +108,7 @@ st.title("⛳ PGA2K25 Distance Calculator")
 raw = st.number_input("Distance to pin (yards)", min_value=1, max_value=1000, value=150, step=1)
 ws = st.number_input("Wind speed (mph)", min_value=0, max_value=100, value=10, step=1)
 direction = st.radio("Wind Direction", options=["N", "NE", "E", "SE", "S", "SW", "W", "NW"], horizontal=True)
-    wa = direction_to_degrees(direction)
+wa = direction_to_degrees(direction)
 elev = st.number_input("Elevation change (ft)", min_value=-100, max_value=100, value=0, step=1)
 lie = st.selectbox("Lie condition", ["Fairway", "Light Rough", "Heavy Rough", "Bunker", "Fringe", "Rough"])
 
