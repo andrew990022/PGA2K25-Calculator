@@ -96,10 +96,11 @@ def save_club_distances(distances):
 st.set_page_config("PGA2K25 Calculator", "⛳")
 st.title("⛳ PGA2K25 Distance Calculator")
 
-raw = st.slider("Distance to pin (yards)", 50, 300, 150)
-ws = st.slider("Wind speed (mph)", 0, 30, 10)
-wa = st.slider("Wind direction (°)", 0, 360, 0)
-elev = st.slider("Elevation change (ft)", -50, 50, 0)
+# Use input boxes instead of sliders
+raw = st.number_input("Distance to pin (yards)", min_value=1, max_value=1000, value=150, step=1)
+ws = st.number_input("Wind speed (mph)", min_value=0, max_value=100, value=10, step=1)
+wa = st.number_input("Wind direction (°)", min_value=0, max_value=360, value=0, step=1)
+elev = st.number_input("Elevation change (ft)", min_value=-100, max_value=100, value=0, step=1)
 lie = st.selectbox("Lie condition", ["Fairway", "Light Rough", "Heavy Rough", "Bunker", "Fringe", "Rough"])
 
 adjusted_distance = calculate(raw, ws, wa, elev, lie)
