@@ -54,7 +54,7 @@ def render_wind_compass(wind_angle_deg):
     )
     st.plotly_chart(fig, use_container_width=True)
 
-def plot_club_carry_vs_adjusted(club_distances, selected_club, adjusted_distance):
+def :
     fig = go.Figure()
     fig.add_trace(go.Bar(
         x=list(club_distances.keys()),
@@ -157,14 +157,14 @@ raw_dist = club_distances[selected_club]
 adjusted = calculate(raw_dist, wind_speed, direction_degrees[selected_direction], elevation, lie)
 
 st.markdown(f"### 🎯 Adjusted Distance: `{adjusted}` yards")
-plot_club_carry_vs_adjusted(club_distances, selected_club, adjusted)
+
 
 
 # Show Adjusted Distance
 st.markdown(f"### 🎯 Adjusted Distance: `{adjusted}` yards")
 
 # Plot
-plot_club_carry_vs_adjusted(club_distances, selected_club, adjusted)
+
 
 # Suggested Club
 closest_club = min(clubs, key=lambda c: abs(c["distance"] - adjusted))
