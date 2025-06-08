@@ -1,5 +1,11 @@
 
 import streamlit as st
+def calculate_adjusted_distance(distance, wind_speed, wind_angle_deg):
+    import math
+    wind_radians = math.radians(wind_angle_deg)
+    wind_effect = wind_speed * math.cos(wind_radians)
+    adjusted = distance + wind_effect * 0.5  # Simplified adjustment formula
+    return round(adjusted, 1)
 import uuid
 import math
 import plotly.graph_objects as go
@@ -150,6 +156,8 @@ st.subheader("Wind Direction")
 directions = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"]
 direction_degrees = {"N": 0, "NE": 45, "E": 90, "SE": 135, "S": 180, "SW": 225, "W": 270, "NW": 315}
 selected_direction = st.radio("Wind From", directions, horizontal=True)
+selected_distance = st.number_input('Enter distance to pin (yards):', min_value=30, max_value=400, value=150)
+
 adjusted = calculate_adjusted_distance(selected_distance, wind_speed, direction_degrees[selected_direction])
 
 render_wind_compass(direction_degrees[selected_direction], adjusted)
