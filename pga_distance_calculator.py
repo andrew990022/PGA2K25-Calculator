@@ -159,6 +159,7 @@ selected_direction = st.radio("Wind From", directions, horizontal=True)
 selected_distance = st.number_input('Enter distance to pin (yards):', min_value=30, max_value=400, value=150)
 
 adjusted = calculate_adjusted_distance(selected_distance, wind_speed, direction_degrees[selected_direction])
+render_wind_compass(direction_degrees[selected_direction], adjusted)
 
 render_wind_compass(direction_degrees[selected_direction], adjusted)
 
