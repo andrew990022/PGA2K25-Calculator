@@ -157,6 +157,12 @@ st.markdown(f"### 🎯 Adjusted Distance: `{adjusted}` yards")
 plot_club_carry_vs_adjusted(club_distances, selected_club, adjusted)
 
 
+# Show Adjusted Distance
+st.markdown(f"### 🎯 Adjusted Distance: `{adjusted}` yards")
+
+# Plot
+plot_club_carry_vs_adjusted(club_distances, selected_club, adjusted)
+
 # Suggested Club
 closest_club = min(clubs, key=lambda c: abs(c["distance"] - adjusted))
 st.markdown(f"### 💡 Suggested Club: `{closest_club['name']}` ({closest_club['distance']}y)")
