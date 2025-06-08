@@ -1,5 +1,6 @@
 
 import streamlit as st
+import uuid
 import math
 import plotly.graph_objects as go
 import json
@@ -71,8 +72,8 @@ def plot_club_carry_vs_adjusted(club_distances, selected_club, adjusted_distance
         textposition="bottom center"
     ))
     fig.update_layout(barmode="group", height=400)
-    unique_key = f"chart_{selected_club}_{adjusted}"
-    unique_key = f"chart_{selected_club}_{adjusted}"
+    unique_key = f"chart_{selected_club}_{adjusted}_{uuid.uuid4()}"
+    unique_key = f"chart_{selected_club}_{adjusted}_{uuid.uuid4()}"
     st.plotly_chart(fig, use_container_width=True, key=unique_key)
 
 def save_clubs(club_data):
