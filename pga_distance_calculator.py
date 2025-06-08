@@ -32,34 +32,6 @@ def calculate(raw_dist, wind_speed, wind_angle, elev, lie):
                  + wind_adjustment(wind_speed, wind_angle)
                  + raw_dist * lie_penalty(lie), 1)
 
-def render_wind_compass(wind_angle_deg):
-    fig = go.Figure()
-    fig.add_trace(go.Scatterpolar(
-        r=[1],
-        theta=[wind_angle_deg],
-        mode='markers+text',
-        marker=dict(size=16, color='deepskyblue'),
-        text=["💨"],
-        textposition="top center",
-        showlegend=False
-    ))
-    fig.update_layout(
-        polar=dict(
-            radialaxis=dict(visible=False),
-            angularaxis=dict(
-                rotation=90,
-                direction="clockwise",
-                tickmode="array",
-                tickvals=[0, 45, 90, 135, 180, 225, 270, 315],
-                ticktext=["N", "NE", "E", "SE", "S", "SW", "W", "NW"]
-            )
-        ),
-        showlegend=False,
-        margin=dict(t=20, b=20, l=40, r=40),
-        height=300
-    )
-    st.plotly_chart(fig, use_container_width=True)
-
     fig = go.Figure()
     fig.add_trace(go.Bar(
         x=list(club_distances.keys()),
@@ -159,9 +131,7 @@ selected_direction = st.radio("Wind From", directions, horizontal=True)
 selected_distance = st.number_input('Enter distance to pin (yards):', min_value=30, max_value=400, value=150)
 
 adjusted = calculate_adjusted_distance(selected_distance, wind_speed, direction_degrees[selected_direction])
-render_wind_compass(direction_degrees[selected_direction], adjusted)
 
-render_wind_compass(direction_degrees[selected_direction], adjusted)
 
 raw_dist = club_distances[selected_club]
 adjusted = calculate(raw_dist, wind_speed, direction_degrees[selected_direction], elevation, lie)
