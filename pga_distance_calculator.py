@@ -2,6 +2,10 @@
 import streamlit as st
 import math
 import plotly.graph_objects as go
+import json
+import os
+
+SAVE_PATH = "club_distances.json"
 
 def wind_adjustment(wind_speed, wind_angle_deg):
     θ = math.radians(wind_angle_deg)
@@ -74,7 +78,21 @@ def plot_club_carry_vs_adjusted(club_distances, selected_club, adjusted_distance
     )
     st.plotly_chart(fig, use_container_width=True)
 
-# Streamlit UI
+def load_club_distances():
+    if os.path.exists(SAVE_PATH):
+        with open(SAVE_PATH, "r") as f:
+            return json.load(f)
+    else:
+        return {
+            "Pitching Wedge": 125, "9 Iron": 135, "8 Iron": 145, "7 Iron": 155, "6 Iron": 165,
+            "5 Iron": 175, "4 Iron": 185, "3 Iron": 195, "5 Wood": 210, "3 Wood": 225, "Driver": 250
+        }
+
+def save_club_distances(distances):
+    with open(SAVE_PATH, "w") as f:
+        json.dump(distances, f)
+
+# Streamlit App
 st.set_page_config("PGA2K25 Calculator", "⛳")
 st.title("⛳ PGA2K25 Distance Calculator")
 
@@ -88,17 +106,24 @@ adjusted_distance = calculate(raw, ws, wa, elev, lie)
 st.subheader(f"🎯 Adjusted distance: **{adjusted_distance} yd**")
 render_wind_compass(wa)
 
-club = st.selectbox("Club", ["Pitching Wedge", "9 Iron", "8 Iron", "7 Iron", "6 Iron", "5 Iron",
-                             "4 Iron", "3 Iron", "5 Wood", "3 Wood", "Driver"])
-club_distances = {
-    "Pitching Wedge": 125, "9 Iron": 135, "8 Iron": 145, "7 Iron": 155, "6 Iron": 165,
-    "5 Iron": 175, "4 Iron": 185, "3 Iron": 195, "5 Wood": 210, "3 Wood": 225, "Driver": 250
-}
-st.markdown(f"📏 Typical {club}: **{club_distances[club]} yd carry**")
+st.markdown("### 🛠️ Customize Your Club Distances")
+club_distances = load_club_distances()
+updated_club_distances = {}
+cols = st.columns(3)
+for i, (club, dist) in enumerate(club_distances.items()):
+    with cols[i % 3]:
+        updated_club_distances[club] = st.number_input(f"{club}", value=dist, min_value=50, max_value=400, step=1)
 
-diff = club_distances[club] - adjusted_distance
+if st.button("💾 Save My Club Distances"):
+    save_club_distances(updated_club_distances)
+    st.success("✅ Club distances saved!")
+
+club = st.selectbox("Choose your club:", list(updated_club_distances.keys()))
+st.markdown(f"📏 Your {club}: **{updated_club_distances[club]} yd carry**")
+
+diff = updated_club_distances[club] - adjusted_distance
 if abs(diff) <= 5: st.success("✅ Good club choice!")
 elif diff > 5: st.warning("⬇️ Might need more club")
 else: st.warning("⬆️ Might be too much club")
 
-plot_club_carry_vs_adjusted(club_distances, club, adjusted_distance)
+plot_club_carry_vs_adjusted(updated_club_distances, club, adjusted_distance)
