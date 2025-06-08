@@ -65,75 +65,93 @@ def plot_club_carry_vs_adjusted(club_distances, selected_club, adjusted_distance
         x=[selected_club],
         y=[adjusted_distance],
         name="Adjusted Distance",
-        mode='markers+text',
-        text=[f"{adjusted_distance} yd"],
-        textposition="top center",
-        marker=dict(size=12, color='crimson', symbol='x')
+        mode="markers+text",
+        marker=dict(size=12, color="crimson"),
+        text=[f"{adjusted_distance}y"],
+        textposition="bottom center"
     ))
-    fig.update_layout(
-        yaxis_title="Yards",
-        xaxis_title="Club",
-        title="Club Carry vs. Adjusted Distance",
-        height=400
-    )
+    fig.update_layout(barmode="group", height=400)
     st.plotly_chart(fig, use_container_width=True)
 
-def load_club_distances():
+def save_clubs(club_data):
+    with open(SAVE_PATH, "w") as f:
+        json.dump(club_data, f)
+
+def load_clubs():
     if os.path.exists(SAVE_PATH):
         with open(SAVE_PATH, "r") as f:
             return json.load(f)
-    else:
-        return {
-            "Pitching Wedge": 125, "9 Iron": 135, "8 Iron": 145, "7 Iron": 155, "6 Iron": 165,
-            "5 Iron": 175, "4 Iron": 185, "3 Iron": 195, "5 Wood": 210, "3 Wood": 225, "Driver": 250
-        }
+    return None
 
-def save_club_distances(distances):
-    with open(SAVE_PATH, "w") as f:
-        json.dump(distances, f)
+# -- UI --
 
+st.title("🏌️ PGA 2K25 Distance Calculator")
 
-def direction_to_degrees(dir):
-    return {
-        "N": 0, "NE": 45, "E": 90, "SE": 135,
-        "S": 180, "SW": 225, "W": 270, "NW": 315
-    }.get(dir, 0)
+if "club_data" not in st.session_state:
+    default = load_clubs()
+    st.session_state.club_data = default if default else [
+        {"name": "Driver", "distance": 280},
+        {"name": "3W", "distance": 250},
+        {"name": "5W", "distance": 235},
+        {"name": "3H", "distance": 225},
+        {"name": "4i", "distance": 210},
+        {"name": "5i", "distance": 200},
+        {"name": "6i", "distance": 190},
+        {"name": "7i", "distance": 180},
+        {"name": "8i", "distance": 170},
+        {"name": "9i", "distance": 160},
+        {"name": "PW", "distance": 150},
+        {"name": "GW", "distance": 140},
+        {"name": "SW", "distance": 130},
+        {"name": "LW", "distance": 120},
+    ]
 
+st.subheader("Clubs & Distances")
+for i in range(len(st.session_state.club_data)):
+    col1, col2, col3 = st.columns([3, 2, 1])
+    st.session_state.club_data[i]["name"] = col1.text_input(
+        f"Club {i+1} Name", value=st.session_state.club_data[i]["name"], key=f"name_{i}"
+    )
+    st.session_state.club_data[i]["distance"] = col2.number_input(
+        f"Distance {i+1}", value=st.session_state.club_data[i]["distance"], step=1, key=f"dist_{i}"
+    )
+    if col3.button("Remove", key=f"remove_{i}"):
+        st.session_state.club_data.pop(i)
+        st.experimental_rerun()
 
-# Streamlit App
-st.set_page_config("PGA2K25 Calculator", "⛳")
-st.title("⛳ PGA2K25 Distance Calculator")
+if st.button("Add Club"):
+    st.session_state.club_data.append({"name": "New Club", "distance": 150})
+    st.experimental_rerun()
 
-# Use input boxes instead of sliders
-raw = st.number_input("Distance to pin (yards)", min_value=1, max_value=1000, value=150, step=1)
-ws = st.number_input("Wind speed (mph)", min_value=0, max_value=100, value=10, step=1)
-direction = st.radio("Wind Direction", options=["N", "NE", "E", "SE", "S", "SW", "W", "NW"], horizontal=True)
-wa = direction_to_degrees(direction)
-elev = st.number_input("Elevation change (ft)", min_value=-100, max_value=100, value=0, step=1)
-lie = st.selectbox("Lie condition", ["Fairway", "Light Rough", "Heavy Rough", "Bunker", "Fringe", "Rough"])
+if st.button("💾 Save My Bag"):
+    save_clubs(st.session_state.club_data)
+    st.success("Clubs saved!")
 
-adjusted_distance = calculate(raw, ws, wa, elev, lie)
-st.subheader(f"🎯 Adjusted distance: **{adjusted_distance} yd**")
-render_wind_compass(wa)
+if st.button("📂 Load Saved Bag"):
+    loaded = load_clubs()
+    if loaded:
+        st.session_state.club_data = loaded
+        st.experimental_rerun()
 
-st.markdown("### 🛠️ Customize Your Club Distances")
-club_distances = load_club_distances()
-updated_club_distances = {}
-cols = st.columns(3)
-for i, (club, dist) in enumerate(club_distances.items()):
-    with cols[i % 3]:
-        updated_club_distances[club] = st.number_input(f"{club}", value=dist, min_value=50, max_value=400, step=1)
+clubs = st.session_state.club_data
 
-if st.button("💾 Save My Club Distances"):
-    save_club_distances(updated_club_distances)
-    st.success("✅ Club distances saved!")
+club_names = [c["name"] for c in clubs]
+club_distances = {c["name"]: c["distance"] for c in clubs}
 
-club = st.selectbox("Choose your club:", list(updated_club_distances.keys()))
-st.markdown(f"📏 Your {club}: **{updated_club_distances[club]} yd carry**")
+st.subheader("Course Conditions")
+selected_club = st.selectbox("Select Club", club_names)
+wind_speed = st.slider("Wind Speed (mph)", -20, 20, 0)
+elevation = st.slider("Elevation Change (ft)", -100, 100, 0)
+lie = st.selectbox("Lie", ["Fairway", "Light Rough", "Rough", "Heavy Rough", "Bunker", "Fringe"])
 
-diff = updated_club_distances[club] - adjusted_distance
-if abs(diff) <= 5: st.success("✅ Good club choice!")
-elif diff > 5: st.warning("⬇️ Might need more club")
-else: st.warning("⬆️ Might be too much club")
+st.subheader("Wind Direction")
+directions = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"]
+direction_degrees = {"N": 0, "NE": 45, "E": 90, "SE": 135, "S": 180, "SW": 225, "W": 270, "NW": 315}
+selected_direction = st.radio("Wind From", directions, horizontal=True)
+render_wind_compass(direction_degrees[selected_direction])
 
-plot_club_carry_vs_adjusted(updated_club_distances, club, adjusted_distance)
+raw_dist = club_distances[selected_club]
+adjusted = calculate(raw_dist, wind_speed, direction_degrees[selected_direction], elevation, lie)
+
+st.markdown(f"### 🎯 Adjusted Distance: `{adjusted}` yards")
+plot_club_carry_vs_adjusted(club_distances, selected_club, adjusted)
