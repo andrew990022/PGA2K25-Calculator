@@ -54,7 +54,6 @@ def render_wind_compass(wind_angle_deg):
     )
     st.plotly_chart(fig, use_container_width=True)
 
-def :
     fig = go.Figure()
     fig.add_trace(go.Bar(
         x=list(club_distances.keys()),
