@@ -150,7 +150,7 @@ st.subheader("Wind Direction")
 directions = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"]
 direction_degrees = {"N": 0, "NE": 45, "E": 90, "SE": 135, "S": 180, "SW": 225, "W": 270, "NW": 315}
 selected_direction = st.radio("Wind From", directions, horizontal=True)
-render_wind_compass(direction_degrees[selected_direction])
+render_wind_compass(direction_degrees[selected_direction], adjusted)
 
 raw_dist = club_distances[selected_club]
 adjusted = calculate(raw_dist, wind_speed, direction_degrees[selected_direction], elevation, lie)
