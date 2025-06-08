@@ -51,7 +51,7 @@ def render_wind_compass(wind_angle_deg):
         margin=dict(t=20, b=20, l=40, r=40),
         height=300
     )
-    st.plotly_chart(fig, use_container_width=True, key=unique_key)
+    st.plotly_chart(fig, use_container_width=True)
 
 def plot_club_carry_vs_adjusted(club_distances, selected_club, adjusted_distance):
     fig = go.Figure()
@@ -72,7 +72,7 @@ def plot_club_carry_vs_adjusted(club_distances, selected_club, adjusted_distance
     ))
     fig.update_layout(barmode="group", height=400)
     unique_key = f"chart_{selected_club}_{adjusted}"
-    st.plotly_chart(fig, use_container_width=True, key=unique_key)
+    st.plotly_chart(fig, use_container_width=True)
 
 def save_clubs(club_data):
     with open(SAVE_PATH, "w") as f:
