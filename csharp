@@ -1,0 +1,9 @@
+
+### D. Commit & Push:
+```bash
+cd PGA2K25-Calculator
+git init
+git add .
+git commit -m "Initial commit – Streamlit PGA2K25 calculator"
+git remote add origin https://github.com/andrew990022/PGA2K25-Calculator.git
+git push -u origin master
