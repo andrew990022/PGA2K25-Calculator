@@ -92,6 +92,14 @@ def save_club_distances(distances):
     with open(SAVE_PATH, "w") as f:
         json.dump(distances, f)
 
+
+def direction_to_degrees(dir):
+    return {
+        "N": 0, "NE": 45, "E": 90, "SE": 135,
+        "S": 180, "SW": 225, "W": 270, "NW": 315
+    }.get(dir, 0)
+
+
 # Streamlit App
 st.set_page_config("PGA2K25 Calculator", "⛳")
 st.title("⛳ PGA2K25 Distance Calculator")
@@ -99,7 +107,9 @@ st.title("⛳ PGA2K25 Distance Calculator")
 # Use input boxes instead of sliders
 raw = st.number_input("Distance to pin (yards)", min_value=1, max_value=1000, value=150, step=1)
 ws = st.number_input("Wind speed (mph)", min_value=0, max_value=100, value=10, step=1)
-wa = st.number_input("Wind direction (°)", min_value=0, max_value=360, value=0, step=1)
+st.image("compass_rose.png", width=200)
+    direction = st.radio("Wind Direction", options=["N", "NE", "E", "SE", "S", "SW", "W", "NW"], horizontal=True)
+    wa = direction_to_degrees(direction)
 elev = st.number_input("Elevation change (ft)", min_value=-100, max_value=100, value=0, step=1)
 lie = st.selectbox("Lie condition", ["Fairway", "Light Rough", "Heavy Rough", "Bunker", "Fringe", "Rough"])
 
